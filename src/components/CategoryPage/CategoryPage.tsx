@@ -6,6 +6,7 @@ import { Link, Redirect } from 'react-router-dom';
 import api, { ApiResponse } from '../../api/api';
 import ArticleType from '../../types/ArticleType';
 import CategoryType from '../../types/CategoryType';
+import SingleArticlePreview from '../SingleArticlePreview/SingleArticlePreview';
 
 interface CategoryPageProperties {
 
@@ -175,6 +176,12 @@ export default class CategoryPage extends React.Component <CategoryPagePropertie
               </Card>
           </Col>
         );
+      }
+
+      private singleArticle(article: ArticleType){
+          return(
+            <SingleArticlePreview article={article} />
+          );
       }
 
    
