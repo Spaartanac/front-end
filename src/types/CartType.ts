@@ -17,6 +17,7 @@ export default interface CartType{
             articlePrices: {
                 articlePriceId: number;
                 price: number;
+                createdAt: string;
             }[];
         }
     }[];
