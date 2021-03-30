@@ -16,6 +16,7 @@ import  {UserRegistrationPage}  from './components/UserRegistrationPage/UserRegi
 import OrdersPage from './components/OrdersPage/OrdersPage';
 import AdministratorLoginPage from './components/AdministratorLoginPage/AdministratorLoginPage';
 import AdministratorDashboard from './components/AdministratorDashboard/AdministratorDashboard';
+import AdministratorDashboardCategory from './components/AdministratorDashboardCategory/AdministratorDashboardCategory';
 
 
 
@@ -32,7 +33,8 @@ ReactDOM.render(
         <Route path="/category/:cId" component= { CategoryPage} />
         <Route path="/user/orders/" component= { OrdersPage} />
         <Route path="/administrator/login" component= {AdministratorLoginPage} />
-        <Route path="/administrator/dashboard" component= {AdministratorDashboard} />
+        <Route exact path="/administrator/dashboard/" component= {AdministratorDashboard} />
+        <Route path="/administrator/dashboard/category/" component= {AdministratorDashboardCategory} />
 
 
 
