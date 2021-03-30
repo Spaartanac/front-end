@@ -3,27 +3,27 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import { Alert, Button, Card, Col, Container, Form, FormControl } from 'react-bootstrap';
 import { Redirect } from 'react-router-dom';
-import api, { saveRefreshToken, saveToken, ApiResponse } from '../../api/api';
+import api, { saveRefreshToken, saveToken, ApiResponse, saveIdentity } from '../../api/api';
 
 
 
 
-interface UserLoginPageState {
-    email: string;
+interface AdministratorLoginPageState {
+    username: string;
     password: string;
     errorMessage: string;
     isLoggedIn: boolean;
 
 }
 
-export default class UserLoginPage extends React.Component {
-    state: UserLoginPageState;
+export default class AdministratorLoginPage extends React.Component {
+    state: AdministratorLoginPageState;
 
     constructor(props: Readonly<{}>) {
         super(props);
 
         this.state = {
-            email: '',
+            username: '',
             password: '',
             errorMessage: '',
             isLoggedIn: false,
@@ -51,8 +51,8 @@ export default class UserLoginPage extends React.Component {
     }
 
     private doLogin(){
-        api('auth/user/login', 'post', {
-            email: this.state.email,
+        api('auth/administrator/login', 'post', {
+            username: this.state.username,
             password: this.state.password,
         }
         )
@@ -66,7 +66,7 @@ export default class UserLoginPage extends React.Component {
                if( res.data.statusCode !== undefined) {
                    let message = '';
                    switch (res.data.statusCode){
-                       case -3001: message = 'Unknown e-mail!'; break;
+                       case -3001: message = 'Unknown username!'; break;
                        case -3002: message = 'Bad password'; break;
 
                    }
@@ -76,8 +76,9 @@ export default class UserLoginPage extends React.Component {
 
                }
 
-               saveToken('user',res.data.token);
-               saveRefreshToken('user',res.data.refreshToken);
+               saveToken('administrator',res.data.token);
+               saveRefreshToken('administrator',res.data.refreshToken);
+               saveIdentity('administrator', res.data.identity);
 
                // Preusmeravanje korisnika.... /#/
 
@@ -90,7 +91,7 @@ export default class UserLoginPage extends React.Component {
 
         if(this.state.isLoggedIn === true){
             return (
-                <Redirect to = "/" />
+                <Redirect to = "/administrator/dashboard" />
             ); 
         }
 
@@ -100,14 +101,14 @@ export default class UserLoginPage extends React.Component {
                 <Card>
                     <Card.Body>
                         <Card.Title>
-                        <FontAwesomeIcon icon={ faSignInAlt } /> User login
+                        <FontAwesomeIcon icon={ faSignInAlt } /> Administrator login
                         </Card.Title>
                         <Card.Text>
                             <Form>
                                 <Form.Group>
-                                    <Form.Label htmlFor="email">E-mail: </Form.Label>
-                                    <Form.Control type="email" id="email" 
-                                                  value={ this.state.email }  
+                                    <Form.Label htmlFor="username">Username: </Form.Label>
+                                    <Form.Control type="username" id="username" 
+                                                  value={ this.state.username }  
                                                   onChange= { event => this.formInputChanged(event as any)  }/>
                                 </Form.Group>
                                 <Form.Group>
