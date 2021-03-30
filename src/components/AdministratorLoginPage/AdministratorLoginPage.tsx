@@ -4,6 +4,7 @@ import React from 'react';
 import { Alert, Button, Card, Col, Container, Form, FormControl } from 'react-bootstrap';
 import { Redirect } from 'react-router-dom';
 import api, { saveRefreshToken, saveToken, ApiResponse, saveIdentity } from '../../api/api';
+import RoledMainMenu from '../RoledMainMenu/RoledMainMenu';
 
 
 
@@ -97,6 +98,8 @@ export default class AdministratorLoginPage extends React.Component {
 
         return (
             <Container>
+                        <RoledMainMenu role="visitor" />
+
                 <Col md= { { span: 6, offset: 3 } }>
                 <Card>
                     <Card.Body>

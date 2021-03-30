@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {  Redirect } from 'react-router-dom';
 import api, { ApiResponse, getIdentity } from '../../api/api';
 import { render } from 'react-dom';
+import RoledMainMenu from '../RoledMainMenu/RoledMainMenu';
 
 
 interface AdministratorDashboardState{
@@ -66,6 +67,8 @@ class  AdministratorDashboard extends React.Component {
   
     return (
       <Container>
+                <RoledMainMenu role="administrator" />
+
                 <Card>
                     <Card.Body>
                         <Card.Title>

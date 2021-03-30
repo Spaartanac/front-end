@@ -7,6 +7,7 @@ import api, { ApiResponse } from '../../api/api';
 import ArticleType from '../../types/ArticleType';
 import CartType from '../../types/CartType';
 import OrderType from '../../types/OrderType';
+import RoledMainMenu from '../RoledMainMenu/RoledMainMenu';
 
 interface OrderPageState{
     isUserLoggedIn: boolean;
@@ -111,6 +112,12 @@ export default class OrdersPage extends React.Component{
     private getOrders(){
         api('/api/user/cart/orders/', 'get', {})
         .then((res: ApiResponse) => {
+            if(res.status === 'login' || res.status === 'error' ){
+                return  this.setLogginState(false);
+             }
+ 
+             
+
              const data: OrderDto[] = res.data;
              
              const orders: OrderType[] = data.map(order => ({
@@ -191,6 +198,8 @@ export default class OrdersPage extends React.Component{
         const sum = this.calculateSum();
 
         <Container>
+                    <RoledMainMenu role="user" />
+
                 <Card>
                     <Card.Body>
                         <Card.Title>

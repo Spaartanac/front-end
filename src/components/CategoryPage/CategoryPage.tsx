@@ -1,11 +1,12 @@
 import { faListAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
-import { Card, Col, Container, Row } from 'react-bootstrap';
+import { Card, Col, Container, Form, Row } from 'react-bootstrap';
 import { Link, Redirect } from 'react-router-dom';
 import api, { ApiResponse } from '../../api/api';
 import ArticleType from '../../types/ArticleType';
 import CategoryType from '../../types/CategoryType';
+import RoledMainMenu from '../RoledMainMenu/RoledMainMenu';
 import SingleArticlePreview from '../SingleArticlePreview/SingleArticlePreview';
 
 interface CategoryPageProperties {
@@ -110,6 +111,8 @@ export default class CategoryPage extends React.Component <CategoryPagePropertie
         return(
 
             <Container>
+                        <RoledMainMenu role="user" />
+
                 <Card>
                     <Card.Body>
                         <Card.Title>
@@ -302,7 +305,7 @@ export default class CategoryPage extends React.Component <CategoryPagePropertie
         this.setState(newState);
     }
     private featureFilterChanged(event: React.ChangeEvent<HTMLInputElement>){
-        const featureId =Number( event.target.dataset.featureId;)
+        const featureId =Number( event.target.dataset.featureId);
         const value = event.target.value;
 
         if (event.target.checked){

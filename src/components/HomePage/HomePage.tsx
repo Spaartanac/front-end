@@ -6,6 +6,7 @@ import CategoryType from '../../types/CategoryType';
 import { Link, Redirect } from 'react-router-dom';
 import api, { ApiResponse } from '../../api/api';
 import { render } from 'react-dom';
+import RoledMainMenu from '../RoledMainMenu/RoledMainMenu';
 
 
 interface HomePageState{
@@ -93,6 +94,7 @@ class  HomePage extends React.Component {
   
     return (
       <Container>
+        <RoledMainMenu role="user" />
                 <Card>
                     <Card.Body>
                         <Card.Title>
