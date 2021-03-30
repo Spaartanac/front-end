@@ -36,8 +36,7 @@ class  AdministratorDashboard extends React.Component {
   }
 
   private getMyData(){
-      const administratorId = getIdentity('administrator');
-    api('/api/administrator/' + administratorId, 'get', {}, 'administrator')
+    api('/api/administrator/' , 'get', {}, 'administrator')
     .then((res: ApiResponse) => {
         if (res.status === 'error' || res.status === 'login'){
             this.setLogginState(false);

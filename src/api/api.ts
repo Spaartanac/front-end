@@ -122,7 +122,7 @@ export function getIdentity(role: 'user' | 'administrator'): string{
 
 async function refreshToken(role:  'user' | 'administrator'): 
      Promise<string | null> {
-         const path = 'auth/user/refresh';
+         const path = 'auth/' + role + '/refresh';
          const data = {
              token: getRefreshToken(role),
          }
