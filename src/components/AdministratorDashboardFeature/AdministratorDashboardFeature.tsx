@@ -1,33 +1,41 @@
 import React from 'react';
 import { Alert, Button, Card, Container, Form, Modal, Table } from 'react-bootstrap';
-import {  faEdit, faHome, faListAlt, faListUl, faPlus } from '@fortawesome/free-solid-svg-icons';
+import {  faBackward, faEdit, faHome, faListAlt, faListUl, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {  Link, Redirect } from 'react-router-dom';
 import api, { ApiResponse, getIdentity } from '../../api/api';
 import { render } from 'react-dom';
 import RoledMainMenu from '../RoledMainMenu/RoledMainMenu';
-import CategoryType from '../../types/CategoryType';
-import ApiCategoryDto from '../../dtos/ApiCategoryDto';
+import FeatureType from '../../types/FeatureType';
+import ApiFeatureDto from '../../dtos/ApiFeatureDto';
+
+interface AdministratorDashboardFeatureProperties {
+
+  match: {
+      params: {
+          cId: number;
+      }
+  }
 
 
-interface AdministratorDashboardCategoryState{
+}
+
+
+
+interface AdministratorDashboardFeatureState{
 
     isAdministratorLoggedIn: boolean;
-    categories: CategoryType[];
+    features: FeatureType[];
 
     addModal: {
       visible: boolean;
       name: string;
-      imagePath: string;
-      parentCategoryId: number | null;
       message: string;
     };
     editModal: {
-      categoryId?: number;
+      featureId?: number;
       visible: boolean;
       name: string;
-      imagePath: string;
-      parentCategoryId: number | null;
       message: string;
 
 };
@@ -35,34 +43,35 @@ interface AdministratorDashboardCategoryState{
 }
 
 
-class  AdministratorDashboardCategory extends React.Component {
-  state: AdministratorDashboardCategoryState;
+class  AdministratorDashboardFeature extends React.Component<AdministratorDashboardFeatureProperties> {
+  state: AdministratorDashboardFeatureState;
 
-  constructor(props: Readonly<{}>){
+  constructor(props: Readonly<AdministratorDashboardFeatureProperties>){
     super(props);
 
     this.state = {
       isAdministratorLoggedIn: true,
-      categories: [],
+      features: [],
       addModal: {
         visible: false,
         name: '',
-        imagePath: '',
-        parentCategoryId: 1,
         message: '',
       }, 
       editModal: {
         visible: false,
         name: '',
-        imagePath: '',
-        parentCategoryId: 1,
         message: '',
       }, 
     };
   }
 
-  componentWillMount(){
-    this.getCategories();
+  componentDidMount(){
+    this.getFeatures();
+  }
+
+  componentDidUpdate(oldProps: any){
+  if(this.props.match.params.cId === oldProps)
+  return;
   }
 
 
@@ -78,14 +87,6 @@ class  AdministratorDashboardCategory extends React.Component {
     this.setState(Object.assign(this.state,
       Object.assign(this.state.addModal, {
           [fieldName]: newValue,
-      }) 
-    ));
-  }
-
-  private setAddModalNumberFieldState(fieldName: string, newValue: any){
-    this.setState(Object.assign(this.state,
-      Object.assign(this.state.addModal, {
-          [fieldName]: (newValue==='null') ? null : Number(newValue),
       }) 
     ));
   }
@@ -115,13 +116,14 @@ class  AdministratorDashboardCategory extends React.Component {
   }
   
 
-  private getCategories(){
-    api('/api/category/' , 'get', {}, 'administrator')
+  private getFeatures(){
+    api('/api/feature/?filter=categoryId||$eq||' + this.props.match.params.cId , 'get', {}, 'administrator')
     .then((res: ApiResponse) => {
         if (res.status === 'error' || res.status === 'login'){
             this.setLogginState(false);
             return;
           }
+          this.putFeaturesInState(res.data);
 
     });
   }
@@ -134,23 +136,19 @@ class  AdministratorDashboardCategory extends React.Component {
  
   }
 
-  private putCategoriesInState(data: ApiCategoryDto[]){
-    const categories = data.map(category => {
+  private putFeaturesInState(data: ApiFeatureDto[]){
+    const features: FeatureType[] = data.map(features => {
       return {
-        categoryId: category.categoryId,
-        name: category.name,
-        parentCategoryId: category.parentCategoryId,
-        imagePath: category.imagePath,
-
+        featureId: features.featureId,
+        name: features.name,
+        categoryId:  features.categoryId,
       };
 
     });
 
-    const newState = Object.assign(this.state, {
-      categories: categories,
-    });
-
-    this.setState(newState);
+    this.setState(Object.assign(this.state, {
+      features: features,
+    }));
 
   }
 
@@ -171,13 +169,17 @@ class  AdministratorDashboardCategory extends React.Component {
                 <Card>
                     <Card.Body>
                         <Card.Title>
-                        <FontAwesomeIcon icon={ faListAlt } /> Categories
+                        <FontAwesomeIcon icon={ faListUl } /> Features
                         </Card.Title>
                         
                         <Table hover size="sm" bordered>
                           <thead>
                             <tr>
-                              <th colSpan={3}></th>
+                              <th colSpan={2}>
+                                <Link to="/administrator/dashboard/category/" className="btn btn-sm btn-secondary">
+                                  <FontAwesomeIcon icon={faBackward}/> Back to categories
+                                </Link>
+                              </th>
                               <th className="text-center">
                                 <Button variant="primary" size="sm"
                                   onClick={() => this.showAddModal()}>
@@ -189,24 +191,17 @@ class  AdministratorDashboardCategory extends React.Component {
                             <tr>
                               <th className="text-right">ID</th>
                               <th>Name</th>
-                              <th className="text-right">Parent ID</th>
                               <th></th>
                             </tr>
                           </thead>
-                          <tbody>
-                            { this.state.categories.map(category =>(
+                          <tbody> 
+                            { this.state.features.map(feature =>(
                               <tr>
-                                <td className="text-right">{category.categoryId}</td>
-                                <td> {category.name} </td>
-                                <td className="text-right">{category.parentCategoryId}</td>
+                                <td className="text-right">{feature.featureId}</td>
+                                <td> {feature.name} </td>
                                 <td className="text-center"> 
-                                <Link to={"/administrator/dashboard/feature/" + category.categoryId}
-                                  className="btn btn-sm btn-info mr-2">
-                                  <FontAwesomeIcon icon={faListUl}/> Features
-
-                                </Link>
                                 <Button variant="info" size="sm"
-                                onClick={() => this.showEditModal(category)}>
+                                onClick={() => this.showEditModal(feature)}>
                                   <FontAwesomeIcon icon={faEdit}/> Edit
                                 </Button>
                                 </td>
@@ -222,7 +217,7 @@ class  AdministratorDashboardCategory extends React.Component {
                 <Modal size="lg" centered show={this.state.addModal.visible} onHide={() => this.setAddModalVisibleState(false)}>
             <Modal.Header closeButton >
                 <Modal.Title>
-                              Add new category
+                              Add new feature
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>  
@@ -231,26 +226,10 @@ class  AdministratorDashboardCategory extends React.Component {
                 <Form.Control id="name" type="text" value={this.state.addModal.name}
                   onChange= { (e) => this.setAddModalStringFieldState('name', e.target.value)} />
               </Form.Group>
+
               <Form.Group>
-                <Form.Label htmlFor="imagePath">Image URL</Form.Label>
-                <Form.Control id="imagePath" type="url" value={this.state.addModal.imagePath}
-                  onChange= { (e) => this.setAddModalStringFieldState('imagePath', e.target.value)} />
-              </Form.Group>
-              <Form.Group>
-                <Form.Label htmlFor="parentCategoryId">Parent category</Form.Label>
-                <Form.Control id="parentCategoryId" as="select" value={this.state.addModal.parentCategoryId?.toString()}
-                  onChange= { (e) => this.setAddModalNumberFieldState('parentCategoryId', e.target.value)} >
-                    <option value='null'>No parent category</option>
-                    {this.state.categories.map(category => (
-                      <option value={category.categoryId?.toString()}>
-                        {category.name}
-                      </option>
-                    )) }
-                    </Form.Control>
-              </Form.Group>
-              <Form.Group>
-                <Button variant="primary" onClick= {() => this.doAddCategory()}>
-                      <FontAwesomeIcon icon={faPlus}/> Add new category
+                <Button variant="primary" onClick= {() => this.doAddFeature()}>
+                      <FontAwesomeIcon icon={faPlus}/> Add new feature
                 </Button>
               </Form.Group>
               { this.state.addModal.message ? (
@@ -264,7 +243,7 @@ class  AdministratorDashboardCategory extends React.Component {
               <Modal size="lg" centered show={this.state.editModal.visible} onHide={() => this.setEditModalVisibleState(false)}>
             <Modal.Header closeButton >
                 <Modal.Title>
-                              Edit  category
+                              Edit  feature
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>  
@@ -273,28 +252,10 @@ class  AdministratorDashboardCategory extends React.Component {
                 <Form.Control id="name" type="text" value={this.state.editModal.name}
                   onChange= { (e) => this.setEditModalStringFieldState('name', e.target.value)} />
               </Form.Group>
+
               <Form.Group>
-                <Form.Label htmlFor="imagePath">Image URL</Form.Label>
-                <Form.Control id="imagePath" type="url" value={this.state.editModal.imagePath}
-                  onChange= { (e) => this.setEditModalStringFieldState('imagePath', e.target.value)} />
-              </Form.Group>
-              <Form.Group>
-                <Form.Label htmlFor="parentCategoryId">Parent category</Form.Label>
-                <Form.Control id="parentCategoryId" as="select" value={this.state.editModal.parentCategoryId?.toString()}
-                  onChange= { (e) => this.setEditModalNumberFieldState('parentCategoryId', e.target.value)} >
-                    <option value='null'>No parent category</option>
-                    {this.state.categories
-                        .filter(category => category.categoryId !== this.state.editModal.categoryId)
-                        .map(category => (
-                      <option value={category.categoryId?.toString()}>
-                        {category.name}
-                      </option>
-                    )) }
-                    </Form.Control>
-              </Form.Group>
-              <Form.Group>
-                <Button variant="primary" onClick= {() => this.doEditCategory()}>
-                      <FontAwesomeIcon icon={faEdit}/> Edit category
+                <Button variant="primary" onClick= {() => this.doEditFeature()}>
+                      <FontAwesomeIcon icon={faEdit}/> Edit feature
                 </Button>
               </Form.Group>
               { this.state.editModal.message ? (
@@ -307,11 +268,10 @@ class  AdministratorDashboardCategory extends React.Component {
   );
 }
 
-private doAddCategory(){
-  api('/api/category/', 'post', {
+private doAddFeature(){
+  api('/api/feature/', 'post', {
       name: this.state.addModal.name,
-      imagePath: this.state.addModal.imagePath,
-      parentCategoryId: this.state.addModal.parentCategoryId,
+      categoryId: this.props.match.params.cId,
   }, 'administrator')
   .then((res: ApiResponse) => {
     if  (res.status === 'login'){
@@ -325,16 +285,14 @@ private doAddCategory(){
       }
 
       this.setAddModalVisibleState(false);
-      this.getCategories();
+      this.getFeatures();
 
   });
 }
 
-private doEditCategory(){
-api('/api/category/' + this.state.editModal.categoryId, 'patch', {
+private doEditFeature(){
+api('/api/feature/' + String(this.state.editModal.featureId) + '/', 'patch', {
     name: this.state.editModal.name,
-    imagePath: this.state.editModal.imagePath,
-    parentCategoryId: this.state.editModal.parentCategoryId,
 }, 'administrator')
 .then((res: ApiResponse) => {
   if  (res.status === 'login'){
@@ -348,7 +306,7 @@ api('/api/category/' + this.state.editModal.categoryId, 'patch', {
     }
 
     this.setEditModalVisibleState(false);
-    this.getCategories();
+    this.getFeatures();
 
 });
 
@@ -356,23 +314,19 @@ api('/api/category/' + this.state.editModal.categoryId, 'patch', {
 
 private showAddModal(){
    this.setAddModalStringFieldState('name','');
-   this.setAddModalStringFieldState('imagePath','');
-   this.setAddModalNumberFieldState('parentCategoryId', 'null');
    this.setAddModalStringFieldState('message', '');
    this.setAddModalVisibleState(true);
 
 }
 
-private showEditModal(category: CategoryType){
+private showEditModal(feature: FeatureType){
 
-  this.setEditModalStringFieldState('name', String(category.name));
-  this.setEditModalStringFieldState('imagePath', String(category.imagePath));
-  this.setEditModalNumberFieldState('parentCategoryId', category.parentCategoryId);
-  this.setEditModalNumberFieldState('categoryId', category.categoryId);
+  this.setEditModalStringFieldState('name', String(feature.name));
+  this.setEditModalNumberFieldState('featureId', feature.featureId.toString());
   this.setEditModalStringFieldState('message', '');
   this.setEditModalVisibleState(true);
 
 }
 
 }
-export default AdministratorDashboardCategory;
+export default AdministratorDashboardFeature;
