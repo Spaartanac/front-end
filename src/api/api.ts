@@ -55,6 +55,64 @@ export default function api(
     
  }
 
+ export  function apiFile(
+    path : string,
+    file: File,
+    name: string,
+    role: 'user' | 'administrator' = 'user', 
+    
+ ) {
+        return new Promise<ApiResponse>((resolve) => {
+
+            const formData = new FormData();
+            formData.append(name, file)
+
+
+            const requestData: AxiosRequestConfig = {
+                method: 'post',
+                url: path,
+                baseURL:ApiConfig.API_URL,
+                data: formData,
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': getToken(role),
+                },
+            };
+
+
+
+        axios(requestData)
+        .then(res => responseHandler(res, resolve, requestData))
+        .catch(async err => {
+            if(err.response.status === 401){
+                const newToken = await refreshToken(role);
+ 
+                if(!newToken){
+                    const response: ApiResponse = {
+                        status: 'login',
+                        data: null,
+                    };
+                    return resolve(response);
+                }
+ 
+                saveToken(role, newToken);
+ 
+                requestData.headers['Authorization'] = getToken(role);
+ 
+                 return await repeatRequest(requestData, resolve);
+ 
+             }
+            const response: ApiResponse = {
+                status: 'error',
+                data: err
+            };
+            resolve(response);
+
+        });
+    });
+    
+ }
+
 export interface ApiResponse {
     status: 'ok' | 'error' | 'login';
     data: any;
