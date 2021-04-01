@@ -399,7 +399,9 @@ private async addModalCategoryChanged(event: React.ChangeEvent<HTMLSelectElement
                                 <td> {article.isPromoted ? 'Yes' : 'No'} </td>
                                 <td className="text-right"> {article.price} </td>
                                 <td className="text-center"> 
-                                  //..
+                                <Link to={'/administrator/dashboard/photo' + article.articleId }
+                                  className = "btn btn-sm btn-info mr-3">
+                                </Link>
 
                                 <Button variant="info" size="sm"
                                 onClick={() => this.showEditModal(article)}>
