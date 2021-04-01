@@ -22,6 +22,8 @@ import AdministratorDashboardArticle from './components/AdministratorDashboardAr
 import AdministratorDashboardPhoto from './components/AdministratorDashboardPhoto/AdministratorDashboardPhoto';
 import ArticlePage from './components/ArticlePage/ArticlePage';
 import AdministratorDashboardOrder from './components/AdministratorDashboardOrder/AdministratorDashboardOrder';
+import { AdministratorLogoutPage } from './components/AdministratorLogoutPage/AdministratorLogoutPage';
+import { UserLogoutPage } from './components/UserLogoutPage/UserLogoutPage';
 
 
 
@@ -34,11 +36,13 @@ ReactDOM.render(
         <Route exact path="/" component={HomePage}/>
         <Route path="/contact" component= { ContactPage } />
         <Route path="/user/login" component= {UserLoginPage} />
+        <Route path="/user/logout" component= {UserLogoutPage} />
         <Route path="/user/register" component= { UserRegistrationPage } />
         <Route path="/category/:cId" component= { CategoryPage} />
         <Route path="/article/:aId" component= { ArticlePage} />
         <Route path="/user/orders/" component= { OrdersPage} />
         <Route path="/administrator/login" component= {AdministratorLoginPage} />
+        <Route path="/administrator/logout" component= {AdministratorLogoutPage} />
         <Route exact path="/administrator/dashboard/" component= {AdministratorDashboard} />
         <Route path="/administrator/dashboard/category/" component= {AdministratorDashboardCategory} />
         <Route path="/administrator/dashboard/feature/:cId" component= {AdministratorDashboardFeature} />
